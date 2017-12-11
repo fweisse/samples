@@ -2,11 +2,11 @@ package com.service;
 
 import com.dao.EmployeeDao;
 import com.json.PrintableEmployee;
+import com.json.PrintableEmployees;
 import com.model.Employee;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class EmployeeService {
@@ -17,7 +17,13 @@ public class EmployeeService {
         this.dao = dao;
     }
 
-    public List<PrintableEmployee> getAllEmployeesForPrint() {
+    public PrintableEmployees getPrintablesEMployees() {
+        PrintableEmployees employess = new PrintableEmployees();
+        getAllEmployeesForPrint().forEach(em -> employess.addEmployee(em));
+        return employess;
+    }
+
+    private List<PrintableEmployee> getAllEmployeesForPrint() {
         return dao.getAllEmployees().stream()
                 .map(emp -> getRecordsFor(emp))
                 .flatMap(printables -> printables.stream())

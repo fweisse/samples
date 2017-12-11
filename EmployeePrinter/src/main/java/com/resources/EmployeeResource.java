@@ -2,6 +2,7 @@ package com.resources;
 
 
 import com.json.PrintableEmployee;
+import com.json.PrintableEmployees;
 import com.service.EmployeeService;
 
 import javax.ws.rs.GET;
@@ -24,30 +25,36 @@ public class EmployeeResource {
     }
 
     @GET
-    public List<PrintableEmployee> getEmployeesForPrint() {
-        return service.getAllEmployeesForPrint();
+    public PrintableEmployees getEmployeesForPrint() {
+        return service.getPrintablesEMployees();
     }
 
     @GET
     @Path("/html")
     @Produces(MediaType.TEXT_HTML)
     public Response getEmployeesHtml() {
-        return Response.ok(getHtmlTable(service.getAllEmployeesForPrint()) ).build();
+        return Response.ok(getHtmlTable(service.getPrintablesEMployees()) ).build();
     }
 
-    private String getHtmlTable(List<PrintableEmployee> employee) {
+    private String getHtmlTable(PrintableEmployees employees) {
         StringBuilder table = new StringBuilder("<table border=\"1\">");
-        employee.forEach(empl -> table.append(getHtmlRow(empl)));
+        employees.getEmployess().forEach(
+                empl -> table.append(getHtmlRow(empl, employees.getColumnCount())));
         return table
                 .append("</table>")
                 .toString();
     }
 
-    private String getHtmlRow(PrintableEmployee employee) {
+    private String getHtmlRow(PrintableEmployee employee, int columns) {
         StringBuilder row = new StringBuilder("<tr>");
-        IntStream.range(0, employee.getColumnPos()).forEach(i ->row.append(emptyColumn));
+        IntStream.range(0, employee.getColumnPos())
+                .forEach(i ->row.append(emptyColumn));
+        row
+                .append("<td>" + employee.getName() + "</td>");
+        IntStream.range(employee.getColumnPos(), columns -1)
+                .forEach(i ->row.append(emptyColumn));
         return row
-                .append("<td>" + employee.getName() + "</td></tr>")
+                .append("</tr>")
                 .toString();
     }
 
